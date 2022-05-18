@@ -4,6 +4,7 @@
  */
 package Graphics;
 
+import ThreadsSnake.TaskOne;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
@@ -23,6 +24,10 @@ public class SnakeP extends JPanel {
     List<int[]> snake = new ArrayList<>();
     int[] feed = new int[2];
     String dir = "ri";
+    String nextDir = "ri";
+
+    TaskOne play;
+    Thread th;
 
     public SnakeP(int quamax, int qua) {
         this.quamax = quamax;
@@ -33,6 +38,11 @@ public class SnakeP extends JPanel {
         snake.add(b);
         snake.add(a);
         generateFeed();
+
+        play = new TaskOne(this);
+        th = new Thread(play);
+        th.start();
+
     }
 
     public void paint(Graphics painter) {
@@ -47,6 +57,7 @@ public class SnakeP extends JPanel {
     }
 
     public void walk() {
+        equalDir();
         int[] last = snake.get(snake.size() - 1);
         int addX = 0;
         int addY = 0;
@@ -66,25 +77,24 @@ public class SnakeP extends JPanel {
         }
 
         int[] newp = {Math.floorMod(last[0] + addX, qua), Math.floorMod(last[1] + addY, qua)};
-        boolean state=false;
+        boolean state = false;
         for (int[] cor : snake) {
-                if(cor[0]==newp[0] && cor[1]==newp[1]){
-                    state=true;
-                    break;
-                }
+            if (cor[0] == newp[0] && cor[1] == newp[1]) {
+                state = true;
+                break;
             }
+        }
+        
         if (newp[0] == feed[0] && newp[1] == feed[1]) {
             snake.add(newp);
             generateFeed();
-        }else if(state){
+        } else if (state) {
             JOptionPane.showMessageDialog(null, "Game Over");
-        }else{
-            
+        } else{
+
             snake.add(newp);
             snake.remove(0);
         }
-        
-            
 
     }
 
@@ -107,6 +117,25 @@ public class SnakeP extends JPanel {
             feed[1] = b;
         }
 
+    }
+
+    public void changePath(String nextDir) {
+        
+        if((dir.equals("ri")||dir.equals("le"))&&(nextDir.equals("up")||nextDir.equals("down"))){
+             this.nextDir = nextDir;
+        }
+        if((dir.equals("up")||dir.equals("down"))&&(nextDir.equals("ri")||nextDir.equals("le"))){
+             this.nextDir = nextDir;
+        }
+        
+    }
+
+    public void equalDir() {
+        this.dir = nextDir;
+    }
+    
+    public void stopGame(){
+        play.stopIns();
     }
 
 }
