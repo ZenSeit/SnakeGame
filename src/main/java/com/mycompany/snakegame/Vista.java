@@ -17,8 +17,8 @@ public class Vista extends javax.swing.JFrame {
     public Vista() {
         initComponents();
         
-        snake = new SnakeP(600,30);
-        Background backg = new Background(600,30);
+        snake = new SnakeP(600,10);
+        Background backg = new Background(600,10);
         
         
         this.add(snake);
@@ -74,7 +74,7 @@ public class Vista extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnavanzarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnavanzarActionPerformed
-        snake.goHead();
+        snake.walk();
         snake.repaint();
     }//GEN-LAST:event_btnavanzarActionPerformed
 
