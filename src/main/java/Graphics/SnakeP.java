@@ -19,12 +19,16 @@ import javax.swing.JPanel;
 public class SnakeP extends JPanel {
 
     Color colorSnake = new Color(102, 100, 118);
+    Color colorSnakeH = new Color(81, 149, 86);
     Color colorFeed = Color.pink;
     int quamax, qua, sizep;
     List<int[]> snake = new ArrayList<>();
     int[] feed = new int[2];
     String dir = "ri";
     String nextDir = "ri";
+    int sc;
+    int[] newp;
+    boolean statew;
 
     TaskOne play;
     Thread th;
@@ -33,11 +37,13 @@ public class SnakeP extends JPanel {
         this.quamax = quamax;
         this.qua = qua;
         this.sizep = quamax / qua;
+        snake.clear();
         int[] a = {qua / 2, qua / 2 - 1};
         int[] b = {qua / 2 - 1, qua / 2 - 1};
         snake.add(b);
         snake.add(a);
         generateFeed();
+        sc=0;
 
         play = new TaskOne(this);
         th = new Thread(play);
@@ -49,7 +55,13 @@ public class SnakeP extends JPanel {
         super.paint(painter);
         painter.setColor(colorSnake);
         for (int i = 0; i < snake.size(); i++) {
-            painter.fillRect(snake.get(i)[0] * sizep, snake.get(i)[1] * sizep, sizep - 1, sizep - 1);
+            if(i<snake.size()-1){
+              painter.fillRect(snake.get(i)[0] * sizep, snake.get(i)[1] * sizep, sizep - 1, sizep - 1);  
+            }else{
+               painter.setColor(colorSnakeH); 
+               painter.fillRect(snake.get(i)[0] * sizep, snake.get(i)[1] * sizep, sizep - 1, sizep - 1);
+            }
+            
         }
 
         painter.setColor(colorFeed);
@@ -76,11 +88,11 @@ public class SnakeP extends JPanel {
                 break;
         }
 
-        int[] newp = {Math.floorMod(last[0] + addX, qua), Math.floorMod(last[1] + addY, qua)};
-        boolean state = false;
+        newp = new int[]{Math.floorMod(last[0] + addX, qua), Math.floorMod(last[1] + addY, qua)};
+
         for (int[] cor : snake) {
             if (cor[0] == newp[0] && cor[1] == newp[1]) {
-                state = true;
+                statew = true;
                 break;
             }
         }
@@ -88,14 +100,14 @@ public class SnakeP extends JPanel {
         if (newp[0] == feed[0] && newp[1] == feed[1]) {
             snake.add(newp);
             generateFeed();
-        } else if (state) {
-            JOptionPane.showMessageDialog(null, "Game Over");
+        } else if (statew) {
+            JOptionPane.showMessageDialog(null, "Game Over\n"+"Your score in this game was: "+scoreGame(),"Snake Game",JOptionPane.INFORMATION_MESSAGE);
+            clearGame();
         } else{
 
             snake.add(newp);
             snake.remove(0);
         }
-
     }
 
     public void generateFeed() {
@@ -136,6 +148,29 @@ public class SnakeP extends JPanel {
     
     public void stopGame(){
         play.stopIns();
+    }
+    
+    public void pauseGame(){
+        play.pause();
+    }
+    
+    public int scoreGame(){ 
+        sc=snake.size()-2;
+        return sc;
+        
+    }
+    
+    public void clearGame(){
+        snake.clear();
+        statew=false;
+        newp[0]=0;
+        newp[1]=0;
+        int[] a = {qua / 2, qua / 2 - 1};
+        int[] b = {qua / 2 - 1, qua / 2 - 1};
+        snake.add(b);
+        snake.add(a);
+        generateFeed();
+        sc=0;
     }
 
 }

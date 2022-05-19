@@ -6,7 +6,11 @@ package com.mycompany.snakegame;
 
 import Graphics.Background;
 import Graphics.SnakeP;
+import ThreadsSnake.TaskLabel;
+import java.awt.Font;
 import java.awt.event.KeyEvent;
+import static java.lang.String.valueOf;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 /**
@@ -18,9 +22,11 @@ public class Vista extends javax.swing.JFrame {
     boolean state = true;
     SnakeP snake;
     Background backg;
+    TaskLabel upLabel;
+    Thread th2;
 
     public Vista() {
-        //setResizable(false);
+        setResizable(false);
         initComponents();
 
         backg = new Background(600, 10);
@@ -31,6 +37,18 @@ public class Vista extends javax.swing.JFrame {
         this.requestFocus(true);
         btnRestart.setFocusable(false);
         btnStart.setFocusable(false);
+        btnStart.setLocation(640, 30);
+        btnPause.setFocusable(false);
+        btnPause.setLocation(640, 30);
+        btnRestart.setVisible(false);
+        btnPause.setVisible(false);
+        btnRestart.setLocation(640, 60);
+        
+        
+        scoreL.setLocation(640, 85);
+        scoreL.setFont(new Font("Serif",Font.PLAIN,15));
+        
+        
 
     }
 
@@ -45,15 +63,19 @@ public class Vista extends javax.swing.JFrame {
 
         btnRestart = new javax.swing.JButton();
         btnStart = new javax.swing.JButton();
+        btnPause = new javax.swing.JButton();
+        scoreL = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Snake Game by ZenSei");
         setMinimumSize(new java.awt.Dimension(650, 670));
-        setPreferredSize(new java.awt.Dimension(620, 620));
+        setPreferredSize(new java.awt.Dimension(750, 620));
         addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 formKeyPressed(evt);
             }
         });
+        getContentPane().setLayout(null);
 
         btnRestart.setText("Restart");
         btnRestart.addActionListener(new java.awt.event.ActionListener() {
@@ -61,6 +83,8 @@ public class Vista extends javax.swing.JFrame {
                 btnRestartActionPerformed(evt);
             }
         });
+        getContentPane().add(btnRestart);
+        btnRestart.setBounds(432, 19, 72, 22);
 
         btnStart.setText("Start");
         btnStart.addActionListener(new java.awt.event.ActionListener() {
@@ -68,68 +92,64 @@ public class Vista extends javax.swing.JFrame {
                 btnStartActionPerformed(evt);
             }
         });
+        getContentPane().add(btnStart);
+        btnStart.setBounds(432, 47, 72, 22);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap(432, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnRestart, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btnStart, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(19, 19, 19)
-                .addComponent(btnRestart)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnStart)
-                .addContainerGap(354, Short.MAX_VALUE))
-        );
+        btnPause.setText("Pause");
+        btnPause.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPauseActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnPause);
+        btnPause.setBounds(432, 75, 72, 22);
+
+        scoreL.setText("Score: 0");
+        scoreL.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                scoreLKeyPressed(evt);
+            }
+        });
+        getContentPane().add(scoreL);
+        scoreL.setBounds(437, 110, 60, 16);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
-        switch (evt.getKeyCode()) {
-            case KeyEvent.VK_LEFT:
-                snake.changePath("le");
-                break;
-            case KeyEvent.VK_RIGHT:
-                snake.changePath("ri");
-                break;
-            case KeyEvent.VK_UP:
-                snake.changePath("up");
-                break;
-            case KeyEvent.VK_DOWN:
-                snake.changePath("down");
-                break;
-            default:
-                break;
+        if (snake != null) {
+
+            switch (evt.getKeyCode()) {
+                case KeyEvent.VK_LEFT:
+                    snake.changePath("le");
+                    break;
+                case KeyEvent.VK_RIGHT:
+                    snake.changePath("ri");
+                    break;
+                case KeyEvent.VK_UP:
+                    snake.changePath("up");
+                    break;
+                case KeyEvent.VK_DOWN:
+                    snake.changePath("down");
+                    break;
+                default:
+                    break;
+            }
         }
     }//GEN-LAST:event_formKeyPressed
 
     private void btnRestartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRestartActionPerformed
-        this.remove(snake);
-        this.remove(backg);
-        snake = new SnakeP(600, 10);
-        this.add(snake);
-        snake.setBounds(20, 20, 600, 600);
-        snake.setOpaque(false);
-
-        backg = new Background(600, 10);
-
-        this.add(backg);
-        backg.setBounds(20, 20, 600, 600);
+        snake.clearGame();
+        
     }//GEN-LAST:event_btnRestartActionPerformed
 
     private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
+        btnRestart.setVisible(true);
+        btnStart.setVisible(false);
+        btnPause.setVisible(true);
         this.remove(backg);
-        if(snake!=null){
-           this.remove(snake); 
+        if (snake != null) {
+            this.remove(snake);
         }
         snake = new SnakeP(600, 10);
         this.add(snake);
@@ -139,7 +159,25 @@ public class Vista extends javax.swing.JFrame {
 
         this.add(backg);
         backg.setBounds(20, 20, 600, 600);
+
+        //scoreL.setText("Score: " + snake.scoreGame());
+        
+        upLabel = new TaskLabel(scoreL,snake);
+        th2 = new Thread(upLabel);
+        th2.start();
+        
+
+
     }//GEN-LAST:event_btnStartActionPerformed
+
+    private void btnPauseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPauseActionPerformed
+
+        snake.pauseGame();
+    }//GEN-LAST:event_btnPauseActionPerformed
+
+    private void scoreLKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_scoreLKeyPressed
+
+    }//GEN-LAST:event_scoreLKeyPressed
 
     /**
      * @param args the command line arguments
@@ -177,7 +215,9 @@ public class Vista extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnPause;
     private javax.swing.JButton btnRestart;
     private javax.swing.JButton btnStart;
+    private javax.swing.JLabel scoreL;
     // End of variables declaration//GEN-END:variables
 }
